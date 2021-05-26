@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -55,7 +56,7 @@ namespace NgZorroBack.Controllers
                 UserName = usuarioModel.NombreUsuario,
                 Email = usuarioModel.Email,
                 Nombre = usuarioModel.Nombre,
-                IdEstado = usuarioModel.IdEstado,
+                IdEstado = 1,
                 IdRol = usuarioModel.IdRol,
                 Apellido = usuarioModel.Apellido,
                 Celular =  usuarioModel.Celular,
@@ -107,6 +108,24 @@ namespace NgZorroBack.Controllers
             }
         }
         [HttpGet]
+        [Route("ListarTipoDocumento")]
+        public async Task<IEnumerable<TipoDocumento>> GetTipoDocumentos()
+        {
+            return await _context.TipoDocumentos.ToListAsync();
+        }
+        [HttpGet]
+        [Route("ListarGenero")]
+        public async Task<IEnumerable<Genero>> GetGeneros()
+        {
+            return await _context.Generos.ToListAsync();
+        }
+        [HttpGet]
+        [Route("ListarRoles")]
+        public async Task<IEnumerable<Role>> GetRoles()
+        {
+            return await _context.Roles.ToListAsync();
+        }
+        [HttpGet]
         [Route("Perfil")]
         [Authorize]
         //GET : /api/UserProfile
@@ -137,6 +156,19 @@ namespace NgZorroBack.Controllers
                 return BadRequest(new { mensaje = "No se encuentra el usuario" });
             }
         }
+        [HttpPost]
+        [Route("Imagenes")]
+        public async Task<IActionResult> imagenes(IFormFile File)
+        {
+            var files = Request.Form.Files[0];
+            string move = $"E:\\GitHub\\Sebastian\\MerakiFrontEnd\\src\\assets\\img";
+            using (var fileStream = new FileStream(Path.Combine(move, File.FileName), FileMode.Create, FileAccess.Write))
+            {
+                await File.CopyToAsync(fileStream);
+            }
+
+            return NoContent();
+        }
         [HttpGet]
         [Route("ListarCliPro")]
         public async Task<ActionResult> ListarClientePropitario()
@@ -144,7 +176,7 @@ namespace NgZorroBack.Controllers
             using (IDbConnection dbConnection = Connection)
             {
 
-                string sQuery = @"select u.Id, u.Apellido, U.Nombre, U.Celular, U.UserName, U.NumeroDocumento, U.Email, U.Direccion, R.NombreRol,
+                string sQuery = @"select u.Id, u.Apellido, U.Nombre, U.Celular, U.UserName, U.NumeroDocumento, U.Email, U.Direccion, 
                                     R.NombreRol, T.NombreDoocumento, G.NombreGenero, E.IdEstadoUsuario, E.EstadoNombre
                                     from UsuariosIdentity u
                                     inner join Roles R On U.IdRol = R.IdRol
@@ -165,7 +197,7 @@ namespace NgZorroBack.Controllers
             {
                 if (usuario.IdRol == 2 || usuario.IdRol == 3)
                 {
-                    string sQuery= @"select u.Id, u.Apellido, U.Nombre, U.Celular, U.UserName, U.NumeroDocumento, U.Email, U.Direccion, R.NombreRol,
+                    string sQuery= @"select u.Id, u.Apellido, U.Nombre, U.Celular, U.UserName, U.NumeroDocumento, U.Email, U.Direccion,
                                     R.NombreRol, T.NombreDoocumento, G.NombreGenero, E.IdEstadoUsuario, E.EstadoNombre
                                     from UsuariosIdentity u
                                     inner join Roles R On U.IdRol = R.IdRol
@@ -178,7 +210,7 @@ namespace NgZorroBack.Controllers
                 }
                 else
                 {
-                    string sQuery = @"select u.Id, u.Apellido, U.Nombre, U.Celular, U.UserName, U.NumeroDocumento, U.Email, U.Direccion, R.NombreRol,
+                    string sQuery = @"select u.Id, u.Apellido, U.Nombre, U.Celular, U.UserName, U.NumeroDocumento, U.Email, U.Direccion,
                                     R.NombreRol, T.NombreDoocumento, G.NombreGenero, E.IdEstadoUsuario, E.EstadoNombre,
 									I.FotoConductor, I.FechaInicio, I.FechaFin
                                     from UsuariosIdentity u
@@ -202,7 +234,7 @@ namespace NgZorroBack.Controllers
                 UserName = conductor.NombreUsuario,
                 Email = conductor.Email,
                 Nombre = conductor.Nombre,
-                IdEstado = conductor.IdEstado,
+                IdEstado = 1,
                 IdRol = conductor.IdRol,
                 Apellido = conductor.Apellido,
                 Celular = conductor.Celular,
@@ -251,7 +283,7 @@ namespace NgZorroBack.Controllers
                 UserName = conductor.NombreUsuario,
                 Email = conductor.Email,
                 Nombre = conductor.Nombre,
-                IdEstado = conductor.IdEstado,
+                IdEstado = 1,
                 IdRol = conductor.IdRol,
                 Apellido = conductor.Apellido,
                 Celular = conductor.Celular,
@@ -355,7 +387,7 @@ namespace NgZorroBack.Controllers
                 UserName = usuarioModel.NombreUsuario,
                 Email = usuarioModel.Email,
                 Nombre = usuarioModel.Nombre,
-                IdEstado = usuarioModel.IdEstado,
+                IdEstado = 1,
                 IdRol = usuarioModel.IdRol,
                 Apellido = usuarioModel.Apellido,
                 Celular = usuarioModel.Celular,
