@@ -7,7 +7,7 @@ namespace NgZorroBack.Models
     {
         [Key]
         public int IdServicio { get; set; }
-        public int IdCliente { get; set; }
+        public string IdCliente { get; set; }
         public int IdTipoCarga { get; set; }
         public string DireccionCarga { get; set; }
         public string DireccionEntrega { get; set; }

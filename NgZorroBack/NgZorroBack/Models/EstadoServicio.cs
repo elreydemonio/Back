@@ -11,7 +11,7 @@ namespace NgZorroBack.Models
         }
         [Key]
         public int IdEstadoServicio { get; set; }
-        public string Descripcion { get; set; }
+        public string Estado { get; set; }
 
         public virtual ICollection<Servicio> Servicios { get; set; }
     }
