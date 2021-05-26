@@ -15,7 +15,7 @@ namespace NgZorroBack.Models
         }
         [Key]
         public int IdTipoDocumento { get; set; }
-        public string Descripcion { get; set; }
+        public string NombreDoocumento { get; set; }
 
         public virtual ICollection<UsuarioIdentity> Usuarios { get; set; }
     }

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NgZorroBack.Models;
 
 namespace NgZorroBack.Migrations
 {
     [DbContext(typeof(MerakiZorroContext))]
-    partial class MerakiZorroContextModelSnapshot : ModelSnapshot
+    [Migration("20210525215210_Resto")]
+    partial class Resto
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -116,8 +118,8 @@ namespace NgZorroBack.Migrations
                     b.Property<string>("FotoConductor")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("IdConductor")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("IdConductor")
+                        .HasColumnType("int");
 
                     b.HasKey("IdInfo");
 
@@ -178,8 +180,8 @@ namespace NgZorroBack.Migrations
                     b.Property<DateTime>("FechaInicio")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("IdCliente")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("IdCliente")
+                        .HasColumnType("int");
 
                     b.Property<int>("IdConductor")
                         .HasColumnType("int");

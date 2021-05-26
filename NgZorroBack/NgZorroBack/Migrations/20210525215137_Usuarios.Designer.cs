@@ -10,7 +10,7 @@ using NgZorroBack.Models;
 namespace NgZorroBack.Migrations
 {
     [DbContext(typeof(MerakiZorroContext))]
-    [Migration("20210523002610_Usuarios")]
+    [Migration("20210525215137_Usuarios")]
     partial class Usuarios
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -234,7 +234,7 @@ namespace NgZorroBack.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Nombre")
+                    b.Property<string>("NombreColor")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -249,7 +249,7 @@ namespace NgZorroBack.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Descripcion")
+                    b.Property<string>("Estado")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("IdEstadoServicio");
@@ -264,7 +264,7 @@ namespace NgZorroBack.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Descripcion")
+                    b.Property<string>("EstadoNombre")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("IdEstadoUsuario");
@@ -279,7 +279,7 @@ namespace NgZorroBack.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Descripcion")
+                    b.Property<string>("NombreEstadoV")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("IdEstadoVehiculo");
@@ -294,7 +294,7 @@ namespace NgZorroBack.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Descripcion")
+                    b.Property<string>("NombreGenero")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("IdGenero");
@@ -341,7 +341,7 @@ namespace NgZorroBack.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Nombre")
+                    b.Property<string>("NombreMarca")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -356,7 +356,7 @@ namespace NgZorroBack.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Descripcion")
+                    b.Property<string>("NombreRol")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("IdRol");
@@ -431,7 +431,7 @@ namespace NgZorroBack.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Descripcion")
+                    b.Property<string>("DescripcionCarga")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("IdTipoCarga");
@@ -446,7 +446,7 @@ namespace NgZorroBack.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Descripcion")
+                    b.Property<string>("NombreDoocumento")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("IdTipoDocumento");
