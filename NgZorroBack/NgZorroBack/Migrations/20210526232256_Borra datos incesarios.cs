@@ -2,7 +2,7 @@
 
 namespace NgZorroBack.Migrations
 {
-    public partial class Resto : Migration
+    public partial class Borradatosincesarios : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

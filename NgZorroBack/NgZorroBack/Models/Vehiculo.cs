@@ -13,7 +13,7 @@ namespace NgZorroBack.Models
             InfoConductores = new HashSet<InfoConductore>();
         }
         [Key]
-        public int CodigoV { get; set; }
+        public string CodigoV { get; set; }
         public int IdMarca { get; set; }
         public int Modelo { get; set; }
         public int IdColor { get; set; }
@@ -23,7 +23,7 @@ namespace NgZorroBack.Models
         public string Placa { get; set; }
         public string FotoV { get; set; }
         public string SeguroCarga { get; set; }
-        public int? IdPropietario { get; set; }
+        public string IdPropietario { get; set; }
         public int? IdTipoVehiculo { get; set; }
         public int? IdEstadoVehiculo { get; set; }
 

@@ -2,13 +2,13 @@
 
 namespace NgZorroBack.Migrations
 {
-    public partial class IdInfo : Migration
+    public partial class Stringpropietario : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<string>(
-                name: "IdConductor",
-                table: "InfoConductores",
+                name: "IdPropietario",
+                table: "Vehiculos",
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(int),
@@ -19,8 +19,8 @@ namespace NgZorroBack.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<int>(
-                name: "IdConductor",
-                table: "InfoConductores",
+                name: "IdPropietario",
+                table: "Vehiculos",
                 type: "int",
                 nullable: true,
                 oldClrType: typeof(string),

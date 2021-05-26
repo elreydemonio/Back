@@ -101,11 +101,11 @@ namespace NgZorroBack.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CodigoV")
-                        .HasColumnType("int");
+                    b.Property<string>("CodigoV")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("CodigoVNavigationCodigoV")
-                        .HasColumnType("int");
+                    b.Property<string>("CodigoVNavigationCodigoV")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime?>("FechaFin")
                         .HasColumnType("datetime2");
@@ -263,10 +263,8 @@ namespace NgZorroBack.Migrations
 
             modelBuilder.Entity("NgZorroBack.Models.Vehiculo", b =>
                 {
-                    b.Property<int>("CodigoV")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("CodigoV")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Cilindraje")
                         .HasColumnType("int");
@@ -292,8 +290,8 @@ namespace NgZorroBack.Migrations
                     b.Property<int?>("IdMarcaNavigationId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("IdPropietario")
-                        .HasColumnType("int");
+                    b.Property<string>("IdPropietario")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("IdTipoVehiculo")
                         .HasColumnType("int");

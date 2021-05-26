@@ -299,7 +299,7 @@ namespace NgZorroBack.Controllers
             {
                 CodigoV = conductor.CodigoV,
                 IdConductor = conductor.IdConductor,
-                FotoConductor = conductor.FotoConductor,
+                FotoConductor = Path.GetFileName(conductor.FotoConductor),
                 FechaFin = conductor.FechaFin,
                 FechaInicio = conductor.FechaInicio,
             };

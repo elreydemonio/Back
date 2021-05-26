@@ -239,8 +239,7 @@ namespace NgZorroBack.Migrations
                 name: "Vehiculos",
                 columns: table => new
                 {
-                    CodigoV = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CodigoV = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     IdMarca = table.Column<int>(type: "int", nullable: false),
                     Modelo = table.Column<int>(type: "int", nullable: false),
                     IdColor = table.Column<int>(type: "int", nullable: false),
@@ -381,9 +380,9 @@ namespace NgZorroBack.Migrations
                     FechaInicio = table.Column<DateTime>(type: "datetime2", nullable: false),
                     FechaFin = table.Column<DateTime>(type: "datetime2", nullable: true),
                     FotoConductor = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IdConductor = table.Column<int>(type: "int", nullable: true),
-                    CodigoV = table.Column<int>(type: "int", nullable: false),
-                    CodigoVNavigationCodigoV = table.Column<int>(type: "int", nullable: true)
+                    IdConductor = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CodigoV = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CodigoVNavigationCodigoV = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -402,7 +401,7 @@ namespace NgZorroBack.Migrations
                 {
                     IdServicio = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    IdCliente = table.Column<int>(type: "int", nullable: false),
+                    IdCliente = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IdTipoCarga = table.Column<int>(type: "int", nullable: false),
                     DireccionCarga = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DireccionEntrega = table.Column<string>(type: "nvarchar(max)", nullable: true),

@@ -10,8 +10,8 @@ using NgZorroBack.Models;
 namespace NgZorroBack.Migrations
 {
     [DbContext(typeof(MerakiZorroContext))]
-    [Migration("20210525232427_IdInfo")]
-    partial class IdInfo
+    [Migration("20210526232256_Borra datos incesarios")]
+    partial class Borradatosincesarios
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -103,11 +103,11 @@ namespace NgZorroBack.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CodigoV")
-                        .HasColumnType("int");
+                    b.Property<string>("CodigoV")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("CodigoVNavigationCodigoV")
-                        .HasColumnType("int");
+                    b.Property<string>("CodigoVNavigationCodigoV")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime?>("FechaFin")
                         .HasColumnType("datetime2");
@@ -180,8 +180,8 @@ namespace NgZorroBack.Migrations
                     b.Property<DateTime>("FechaInicio")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("IdCliente")
-                        .HasColumnType("int");
+                    b.Property<string>("IdCliente")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("IdConductor")
                         .HasColumnType("int");
@@ -265,10 +265,8 @@ namespace NgZorroBack.Migrations
 
             modelBuilder.Entity("NgZorroBack.Models.Vehiculo", b =>
                 {
-                    b.Property<int>("CodigoV")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("CodigoV")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Cilindraje")
                         .HasColumnType("int");

@@ -17,7 +17,7 @@ namespace NgZorroBack.Models
         public DateTime? FechaFin { get; set; }
         public string FotoConductor { get; set; }
         public string IdConductor { get; set; }
-        public int CodigoV { get; set; }
+        public string CodigoV { get; set; }
 
         public virtual Vehiculo CodigoVNavigation { get; set; }
         public virtual ICollection<Servicio> Servicios { get; set; }
