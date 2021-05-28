@@ -15,7 +15,7 @@ namespace NgZorroBack.Models
         [Key]
         public string CodigoV { get; set; }
         public int IdMarca { get; set; }
-        public int Modelo { get; set; }
+        public string Modelo { get; set; }
         public int IdColor { get; set; }
         public int Cilindraje { get; set; }
         public string Soat { get; set; }

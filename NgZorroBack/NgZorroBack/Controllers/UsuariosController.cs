@@ -192,12 +192,10 @@ namespace NgZorroBack.Controllers
         [Route("DetalleUsuario/{id}")]
         public async Task<ActionResult> DetalleUsuario(string id)
         {
-            var usuario = await _userManager.FindByIdAsync(id).ConfigureAwait(false);
+            var usuario = await _context.UsuariosIdentity.FindAsync(id);
             using (IDbConnection dbConnection = Connection)
             {
-                if (usuario.IdRol == 2 || usuario.IdRol == 3)
-                {
-                    string sQuery= @"select u.Id, u.Apellido, U.Nombre, U.Celular, U.UserName, U.NumeroDocumento, U.Email, U.Direccion,
+                string sQuery= @"select u.Id, u.Apellido, U.Nombre, U.Celular, U.UserName, U.NumeroDocumento, U.Email, U.Direccion,
                                     R.NombreRol, T.NombreDoocumento, G.NombreGenero, E.IdEstadoUsuario, E.EstadoNombre
                                     from UsuariosIdentity u
                                     inner join Roles R On U.IdRol = R.IdRol
@@ -205,11 +203,16 @@ namespace NgZorroBack.Controllers
                                     inner join Generos G On U.IdGenero = G.IdGenero
                                     inner join EstadoUsuarios E On U.IdEstado = E.IdEstadoUsuario
                                     where U.Id = @id";
-                    dbConnection.Open();
-                    return Ok(await dbConnection.QueryAsync<object>(sQuery, new { Id = id }));
-                }
-                else
-                {
+                dbConnection.Open();
+                return Ok(await dbConnection.QueryAsync<object>(sQuery, new { Id = id }));
+            }
+        }
+        [HttpGet]
+        [Route("DetalleUsuarioConductor/{id}")]
+        public async Task<ActionResult> DetalleUsuarioConductor(string id)
+        {
+            using (IDbConnection dbConnection = Connection)
+            {
                     string sQuery = @"select u.Id, u.Apellido, U.Nombre, U.Celular, U.UserName, U.NumeroDocumento, U.Email, U.Direccion,
                                     R.NombreRol, T.NombreDoocumento, G.NombreGenero, E.IdEstadoUsuario, E.EstadoNombre,
 									I.FotoConductor, I.FechaInicio, I.FechaFin
@@ -222,7 +225,6 @@ namespace NgZorroBack.Controllers
                                     where U.Id = @id";
                     dbConnection.Open();
                     return Ok(await dbConnection.QueryAsync<object>(sQuery, new { Id = id }));
-                }
             }
         }
         [HttpPost]
