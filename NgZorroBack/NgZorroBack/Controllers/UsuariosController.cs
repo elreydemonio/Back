@@ -129,27 +129,14 @@ namespace NgZorroBack.Controllers
         [Route("Perfil")]
         [Authorize]
         //GET : /api/UserProfile
-        public async Task<object> ObtenerPerfilUsuario()
+        public async Task<ActionResult> ObtenerPerfilUsuario()
         {
             string usuarioId = User.Claims.First(c => c.Type == "UsuarioID").Value;
             var usuario = await _userManager.FindByIdAsync(usuarioId).ConfigureAwait(false);
 
             if (usuario != null)
             {
-                HttpContext.Session.SetString(SessionKeyName, usuario.Id);
-                var vergil = HttpContext.Session.GetString("IdUsuario");
-                return new
-                {
-                    usuario.Nombre,
-                    usuario.Email,
-                    usuario.UserName,
-                    usuario.IdEstado,
-                    usuario.IdRol,
-                    usuario.NumeroDocumento,
-                    usuario.Apellido,
-                    usuario.Celular,
-                    usuario.Direccion,
-                };
+                return Ok(usuario);
             }
             else
             {
