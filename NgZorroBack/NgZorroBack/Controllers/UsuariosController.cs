@@ -176,6 +176,28 @@ namespace NgZorroBack.Controllers
             }
         }
         [HttpGet]
+        [Route("ListarConductor")]
+        public async Task<ActionResult> ListarConductor()
+        {
+            using (IDbConnection dbConnection = Connection)
+            {
+
+                string sQuery = @"select u.Id, u.Apellido, U.Nombre, U.Celular, U.UserName, U.NumeroDocumento, U.Email, U.Direccion,
+                                    R.NombreRol, T.NombreDoocumento, G.NombreGenero, E.IdEstadoUsuario, E.EstadoNombre,
+									I.FotoConductor, I.FechaInicio, I.FechaFin, V.CodigoV
+                                    from UsuariosIdentity u
+                                    inner join Roles R On U.IdRol = R.IdRol
+                                    inner join TipoDocumentos T On U.IdTipoDocumento = T.IdTipoDocumento
+                                    inner join Generos G On U.IdGenero = G.IdGenero
+                                    inner join EstadoUsuarios E On U.IdEstado = E.IdEstadoUsuario
+									inner join InfoConductores I On U.Id = I.IdConductor
+									inner join Vehiculos V On I.CodigoV = V.CodigoV
+                                    where U.IdRol = 4";
+                dbConnection.Open();
+                return Ok(await dbConnection.QueryAsync<object>(sQuery));
+            }
+        }
+        [HttpGet]
         [Route("DetalleUsuario/{id}")]
         public async Task<ActionResult> DetalleUsuario(string id)
         {
@@ -304,18 +326,7 @@ namespace NgZorroBack.Controllers
 
             if (usuario != null)
             {
-                return new
-                {
-                    usuario.Nombre,
-                    usuario.Email,
-                    usuario.UserName,
-                    usuario.IdEstado,
-                    usuario.IdRol,
-                    usuario.NumeroDocumento,
-                    usuario.Apellido,
-                    usuario.Celular,
-                    usuario.Direccion,
-                };
+                return usuario;
             }
             else
             {

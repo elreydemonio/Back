@@ -56,16 +56,40 @@ namespace NgZorroBack.Controllers
                 return Ok(await dbConnection.QueryAsync<VehiculosJoin>(sQuery));
             }
         }
+        [HttpGet]
+        [Route("ListarConductor")]
+        public async Task<ActionResult> ListarConductor(string codigov)
+        {
+            using (IDbConnection dbConnection = Connection)
+            {
+
+                string sQuery = @"select u.Id, u.Apellido, U.Nombre, U.Celular, U.UserName, U.NumeroDocumento, U.Email, U.Direccion,
+                                    R.NombreRol, T.NombreDoocumento, G.NombreGenero, E.IdEstadoUsuario, E.EstadoNombre,
+									I.FotoConductor, I.FechaInicio, I.FechaFin, V.CodigoV
+                                    from UsuariosIdentity u
+                                    inner join Roles R On U.IdRol = R.IdRol
+                                    inner join TipoDocumentos T On U.IdTipoDocumento = T.IdTipoDocumento
+                                    inner join Generos G On U.IdGenero = G.IdGenero
+                                    inner join EstadoUsuarios E On U.IdEstado = E.IdEstadoUsuario
+									inner join InfoConductores I On U.Id = I.IdConductor
+									inner join Vehiculos V On I.CodigoV = V.CodigoV
+                                    where U.IdRol = 4 and V.CodigoV = @codigoV";
+                dbConnection.Open();
+                return Ok(await dbConnection.QueryAsync<object>(sQuery, new { codigoV = codigov }));
+            }
+        }
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult> Post(Vehiculo vehiculo)
         {
+            string usuarioId = User.Claims.First(c => c.Type == "UsuarioID").Value;
             int longitud = 7;
             Guid miGuid = Guid.NewGuid();
             string token = Convert.ToBase64String(miGuid.ToByteArray());
             token = token.Replace("=", "").Replace("+", "");
             string codigoV = token.Substring(0, longitud);
             vehiculo.CodigoV = codigoV;
-            vehiculo.IdPropietario = "aeaf5a0b-6d47-4004-90ac-b9463346b56d";
+            vehiculo.IdPropietario = usuarioId;
             string Fotov = Path.GetFileName(vehiculo.FotoV);
             string Seguro = Path.GetFileName(vehiculo.SeguroCarga);
             string soat = Path.GetFileName(vehiculo.Soat);
@@ -126,7 +150,7 @@ namespace NgZorroBack.Controllers
 								where G.CodigoV = @id
                                 ";
                 dbConnection.Open();
-                return Ok(await dbConnection.QueryAsync<VehiculosJoin>(sQuery, new { Id = id }));
+                return Ok(await dbConnection.QueryAsync<object>(sQuery, new { Id = id }));
             }
         } 
         [HttpGet]
@@ -152,25 +176,36 @@ namespace NgZorroBack.Controllers
         public async Task<ActionResult> CambiarEstadoVehiculo(string id, string codigoV)
         {
             var Vehiculo = await _context.Vehiculos.FindAsync(id);
+            var Query = await _context.Vehiculos.Join(_context.InfoConductores, x => x.CodigoV, I => I.CodigoV, (x, I) => new { x, I }).Join(_context.Servicios, c => c.I.IdInfo, s => s.IdConductor, (c, s) => new { c.x, c.I, s }).Where(e=> e.s.IdEstadoServicio == 1 && e.x.CodigoV == codigoV).CountAsync();
             if(Vehiculo is null)
             {
                 return NoContent();
             }
-            if (Vehiculo.IdEstadoVehiculo == 1)
+            else
             {
-                Vehiculo.IdEstadoVehiculo = 2;
-                _context.Vehiculos.Update(Vehiculo);
-                await _context.SaveChangesAsync();
+                if (Query == 0)
+                {
+                    if (Vehiculo.IdEstadoVehiculo == 1)
+                    {
+                        Vehiculo.IdEstadoVehiculo = 2;
+                        _context.Vehiculos.Update(Vehiculo);
+                        await _context.SaveChangesAsync();
+                        return Ok();
+                    }
+                    else if (Vehiculo.IdEstadoVehiculo == 2)
+                    {
+                        Vehiculo.IdEstadoVehiculo = 1;
+                        _context.Vehiculos.Update(Vehiculo);
+                        await _context.SaveChangesAsync();
+                        return Ok();
+                    }
+                }
+                else
+                {
+                    return NoContent();
+                }
                 return Ok();
             }
-            else if(Vehiculo.IdEstadoVehiculo == 2)
-            {
-                Vehiculo.IdEstadoVehiculo = 1;
-                _context.Vehiculos.Update(Vehiculo);
-                await _context.SaveChangesAsync();
-                return Ok();
-            }
-            return Ok();
         }
     }
 }
