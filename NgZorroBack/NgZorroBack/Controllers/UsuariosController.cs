@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using NgZorroBack.Models;
+using NgZorroBack.Models.Join;
 using NgZorroBack.Usuarios;
 using System;
 using System.Collections.Generic;
@@ -31,6 +32,7 @@ namespace NgZorroBack.Controllers
         private readonly ConfiguracionGlobal _configuracionGlobal;
         private readonly MerakiZorroContext _context;
         private readonly string ConectionString;
+        private readonly ValidarUsuario validation = new ValidarUsuario();
         public UsuariosController(UserManager<UsuarioIdentity> userManager,
             SignInManager<UsuarioIdentity> signInManager, IOptions<ConfiguracionGlobal> configuracionGlobal, MerakiZorroContext context)
         {
@@ -240,41 +242,60 @@ namespace NgZorroBack.Controllers
         [Route("AgregarConductor")]
         public async Task<ActionResult> AgregarConductor(Conductor conductor)
         {
-            UsuarioIdentity usu = new UsuarioIdentity()
-            {
-                UserName = conductor.NombreUsuario,
-                Email = conductor.Email,
-                Nombre = conductor.Nombre,
-                IdEstado = 1,
-                IdRol = conductor.IdRol,
-                Apellido = conductor.Apellido,
-                Celular = conductor.Celular,
-                Direccion = conductor.Direccion,
-                IdGenero = conductor.IdGenero,
-                IdTipoDocumento = conductor.IdTipoDocumento,
-                NumeroDocumento = conductor.NumeroDocumento
-            };
-            try
-            {
-                var result = await _userManager
-                    .CreateAsync(usu, conductor.Password).ConfigureAwait(false);
-            }
-            catch (Exception)
-            {
 
-                throw;
-            }
-            InfoConductore infoConductore = new InfoConductore()
+            var vehiculo = await _context.Vehiculos.FindAsync(conductor.CodigoV);
+            var id = conductor.CodigoV;
+            if(vehiculo is null)
             {
-                CodigoV = conductor.CodigoV,
-                IdConductor = usu.Id,
-                FotoConductor = conductor.FotoConductor,
-                FechaFin = conductor.FechaFin,
-                FechaInicio = conductor.FechaInicio,
-            };
-            _context.InfoConductores.Add(infoConductore);
-            await _context.SaveChangesAsync();
-            return Ok();
+                return NoContent();
+            }
+            else
+            {
+                int validar = await validation.Validar(id);
+                if(validar >= 1)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    UsuarioIdentity usu = new UsuarioIdentity()
+                    {
+                        UserName = conductor.NombreUsuario,
+                        Email = conductor.Email,
+                        Nombre = conductor.Nombre,
+                        IdEstado = 1,
+                        IdRol = conductor.IdRol,
+                        Apellido = conductor.Apellido,
+                        Celular = conductor.Celular,
+                        Direccion = conductor.Direccion,
+                        IdGenero = conductor.IdGenero,
+                        IdTipoDocumento = conductor.IdTipoDocumento,
+                        NumeroDocumento = conductor.NumeroDocumento
+                    };
+                    try
+                    {
+                        var result = await _userManager
+                            .CreateAsync(usu, conductor.Password).ConfigureAwait(false);
+                    }
+                    catch (Exception)
+                    {
+
+                        throw;
+                    }
+                    InfoConductore infoConductore = new InfoConductore()
+                    {
+                        CodigoV = conductor.CodigoV,
+                        IdConductor = usu.Id,
+                        FotoConductor = conductor.FotoConductor,
+                        FechaFin = conductor.FechaFin,
+                        FechaInicio = conductor.FechaInicio,
+                    };
+                    _context.InfoConductores.Add(infoConductore);
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
+
+            }
         }
         [HttpPut]
         [Route("EditarConductor/{id}")]
@@ -435,6 +456,50 @@ namespace NgZorroBack.Controllers
             var result = await _userManager
                     .UpdateAsync(usuario).ConfigureAwait(false);
             return Ok();
+        }
+        [HttpPut]
+        [Route("CambiarEstadoConductor/{id}")]
+        public async Task<ActionResult> CambiarEstadoConductor(string id)
+        {
+            if (id is null)
+            {
+                return NotFound();
+            }
+            var usuario = await _userManager.FindByIdAsync(id).ConfigureAwait(false);
+           
+            if (usuario is null)
+            {
+                return NoContent();
+            }
+            var Query = await _context.InfoConductores.Join(_context.Servicios, x => x.IdInfo, s => s.IdConductor, (x, s) => new { x, s }).Where(c => c.x.IdConductor == usuario.Id && c.s.IdEstadoServicio == 1).CountAsync();
+            if(Query >= 1)
+            {
+                return NotFound();
+            }
+            else
+            {
+                if (usuario.IdEstado == 1)
+                {
+                    int? estado = 2;
+                    usuario.IdEstado = estado.Value;
+                    _context.UsuariosIdentity.Update(usuario);
+                }
+                else if (usuario.IdEstado == 2)
+                {
+                    int? estado = 1;
+                    usuario.IdEstado = estado.Value;
+                    _context.UsuariosIdentity.Update(usuario);
+                }
+                else if (usuario.IdEstado == 3)
+                {
+                    int? estado = 1;
+                    usuario.IdEstado = estado.Value;
+                    _context.UsuariosIdentity.Update(usuario);
+                }
+                var result = await _userManager
+                        .UpdateAsync(usuario).ConfigureAwait(false);
+                return Ok();
+            }
         }
     }
 }

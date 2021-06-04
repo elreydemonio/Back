@@ -176,8 +176,8 @@ namespace NgZorroBack.Controllers
         public async Task<ActionResult> CambiarEstadoVehiculo(string id, string codigoV)
         {
             var Vehiculo = await _context.Vehiculos.FindAsync(id);
-            var Query = await _context.Vehiculos.Join(_context.InfoConductores, x => x.CodigoV, I => I.CodigoV, (x, I) => new { x, I }).Join(_context.Servicios, c => c.I.IdInfo, s => s.IdConductor, (c, s) => new { c.x, c.I, s }).Where(e=> e.s.IdEstadoServicio == 1 && e.x.CodigoV == codigoV).CountAsync();
-            if(Vehiculo is null)
+            var Query = await _context.Vehiculos.Join(_context.InfoConductores, x => x.CodigoV, I => I.CodigoV, (x, I) => new { x, I }).Join(_context.Servicios, c => c.I.IdInfo, s => s.IdConductor, (c, s) => new { c.x, c.I, s }).Where(e => e.s.IdEstadoServicio == 1 && e.x.CodigoV == codigoV).CountAsync();
+            if (Vehiculo is null)
             {
                 return NoContent();
             }
