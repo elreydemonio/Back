@@ -1,11 +1,12 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace NgZorroBack.Models
 {
-    public partial class Servicio
+    public class ServiciosModel
     {
-        [Key]
         public int IdServicio { get; set; }
         public string IdCliente { get; set; }
         public int IdTipoCarga { get; set; }
@@ -15,12 +16,7 @@ namespace NgZorroBack.Models
         public int CelularRecibe { get; set; }
         public int? IdConductor { get; set; }
         public decimal PrecioServicio { get; set; }
-        public DateTime FechaInicio { get; set; }
         public DateTime? FechaFin { get; set; }
         public int IdEstadoServicio { get; set; }
-
-        public virtual InfoConductore IdConductorNavigation { get; set; }
-        public virtual EstadoServicio IdEstadoServicioNavigation { get; set; }
-        public virtual TipoCarga IdTipoCargaNavigation { get; set; }
     }
 }

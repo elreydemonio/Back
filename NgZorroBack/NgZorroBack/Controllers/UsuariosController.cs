@@ -264,7 +264,7 @@ namespace NgZorroBack.Controllers
                         Email = conductor.Email,
                         Nombre = conductor.Nombre,
                         IdEstado = 1,
-                        IdRol = conductor.IdRol,
+                        IdRol = 4,
                         Apellido = conductor.Apellido,
                         Celular = conductor.Celular,
                         Direccion = conductor.Direccion,
@@ -286,9 +286,9 @@ namespace NgZorroBack.Controllers
                     {
                         CodigoV = conductor.CodigoV,
                         IdConductor = usu.Id,
-                        FotoConductor = conductor.FotoConductor,
-                        FechaFin = conductor.FechaFin,
-                        FechaInicio = conductor.FechaInicio,
+                        FotoConductor = Path.GetFileName(conductor.FotoConductor),
+                        FechaFin = null,
+                        FechaInicio = DateTime.Now,
                     };
                     _context.InfoConductores.Add(infoConductore);
                     await _context.SaveChangesAsync();

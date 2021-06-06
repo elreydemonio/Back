@@ -29,9 +29,5 @@ namespace NgZorroBack.Models.Join
                 return await dbConnection.QueryFirstAsync<int>(sQuery, new { Id = id });
             }
         }
-        public async Task<int> ValidarSuspencion(string id)
-        {
-
-        } 
     }
 }
