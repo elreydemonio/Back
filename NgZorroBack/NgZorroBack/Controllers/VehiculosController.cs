@@ -40,24 +40,48 @@ namespace NgZorroBack.Controllers
             }
         }
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<VehiculosJoin>>> GetVehiculos()
         {
+            string usuarioId = User.Claims.First(c => c.Type == "UsuarioID").Value;
+            string usuarioIRol = User.Claims.First(c => c.Type == "Rol").Value;
+            int idRol = Convert.ToInt32(usuarioIRol);
             using (IDbConnection dbConnection = Connection)
             {
-
-                string sQuery = @"select G.CodigoV, M.NombreMarca, G.Modelo, C.NombreColor, G.Cilindraje, G.Soat, G.TecnoMecanica, G.Placa , G.FotoV, G.SeguroCarga, U.Nombre, U.Id, T.Descripcion, E.NombreEstadoV
+                if (idRol == 1)
+                {
+                    string sQuery = @"select G.CodigoV, M.NombreMarca, G.Modelo, C.NombreColor, G.Cilindraje, G.Soat, G.TecnoMecanica, G.Placa , G.FotoV, G.SeguroCarga, U.Nombre, U.Id, T.Descripcion, E.NombreEstadoV
                                 from Vehiculos G
                                 join Colores C On G.IdColor = C.Id
                                 join Marcas M On G.IdMarca = M.Id
                                 join UsuariosIdentity U On G.IdPropietario = U.Id
                                 join TipoVehiculos T On G.IdTipoVehiculo = T.IdTipoVehiculo
 								join EstadoVehiculos E ON G.IdEstadoVehiculo = E.IdEstadoVehiculo";
-                dbConnection.Open();
-                return Ok(await dbConnection.QueryAsync<VehiculosJoin>(sQuery));
+                    dbConnection.Open();
+                    return Ok(await dbConnection.QueryAsync<VehiculosJoin>(sQuery));
+                }
+                if(idRol == 2)
+                {
+
+                    string sQuery = @"select G.CodigoV, M.NombreMarca, G.Modelo, C.NombreColor, G.Cilindraje, G.Soat, G.TecnoMecanica, G.Placa , G.FotoV, G.SeguroCarga, U.Nombre, U.Id, T.Descripcion, E.NombreEstadoV
+                                from Vehiculos G
+                                join Colores C On G.IdColor = C.Id
+                                join Marcas M On G.IdMarca = M.Id
+                                join UsuariosIdentity U On G.IdPropietario = U.Id
+                                join TipoVehiculos T On G.IdTipoVehiculo = T.IdTipoVehiculo
+								join EstadoVehiculos E ON G.IdEstadoVehiculo = E.IdEstadoVehiculo
+                                where G.IdPropietario = @id";
+                    dbConnection.Open();
+                    return Ok(await dbConnection.QueryAsync<VehiculosJoin>(sQuery, new { id = usuarioId }));
+                }
+                else
+                {
+                    return BadRequest();
+                }
             }
         }
         [HttpGet]
-        [Route("ListarConductor")]
+        [Route("ListarConductor/{codigov}")]
         public async Task<ActionResult> ListarConductor(string codigov)
         {
             using (IDbConnection dbConnection = Connection)
@@ -65,7 +89,7 @@ namespace NgZorroBack.Controllers
 
                 string sQuery = @"select u.Id, u.Apellido, U.Nombre, U.Celular, U.UserName, U.NumeroDocumento, U.Email, U.Direccion,
                                     R.NombreRol, T.NombreDoocumento, G.NombreGenero, E.IdEstadoUsuario, E.EstadoNombre,
-									I.FotoConductor, I.FechaInicio, I.FechaFin, V.CodigoV
+									I.FotoConductor, I.FechaInicio, I.FechaFin, V.CodigoV, U.IdEstado, E.EstadoNombre
                                     from UsuariosIdentity u
                                     inner join Roles R On U.IdRol = R.IdRol
                                     inner join TipoDocumentos T On U.IdTipoDocumento = T.IdTipoDocumento

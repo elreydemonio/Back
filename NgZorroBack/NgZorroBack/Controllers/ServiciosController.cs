@@ -11,6 +11,7 @@ using NgZorroBack.Usuarios;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -36,7 +37,7 @@ namespace NgZorroBack.Controllers
             _signInManager = signInManager;
             _configuracionGlobal = configuracionGlobal.Value;
             _context = context;
-            ConectionString = "Server=DESKTOP-DER5DC8\\SQLEXPRESS;Database=NgZorroMerakiF2;Trusted_Connection=True;";
+            ConectionString = "Server=DESKTOP-DER5DC8\\SQLEXPRESS;Database=NgZorroMerakiF3;Trusted_Connection=True;";
         }
         private IDbConnection Connection
         {
@@ -133,17 +134,21 @@ namespace NgZorroBack.Controllers
             }
         }
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult> Post(ServiciosModel servicios)
         {
+            string dateString =servicios.FechaFin;
+            string format = "dd/MM/yyyy";
+            DateTime dateTime = DateTime.ParseExact(dateString, format, CultureInfo.InvariantCulture);
             Servicio servicio = new Servicio()
             {
                 CelularRecibe = servicios.CelularRecibe,
                 PersonaRecibe = servicios.PersonaRecibe,
                 DireccionCarga = servicios.DireccionCarga,
                 DireccionEntrega = servicios.DireccionEntrega,
-                FechaFin = servicios.FechaFin,
+                FechaFin = dateTime,
                 FechaInicio = DateTime.Now,
-                IdCliente = "aeaf5a0b-6d47-4004-90ac-b9463346b56d",
+                IdCliente = User.Claims.First(c => c.Type == "UsuarioID").Value,
                 IdConductor = null,
                 IdEstadoServicio = 1,
                 IdTipoCarga = servicios.IdTipoCarga,
@@ -164,7 +169,7 @@ namespace NgZorroBack.Controllers
         public async Task<ActionResult> Update(int id, int idConductor)
         {
             Servicio servicio = await _context.Servicios.FindAsync(id);
-            if(servicio is null)
+            if (servicio is null)
             {
                 return NoContent();
             }
@@ -194,6 +199,59 @@ namespace NgZorroBack.Controllers
 			                        where O.IdEstadoVehiculo = 1 and s.IdServicio = @i";
                 dbConnection.Open();
                 return Ok(await dbConnection.QueryAsync<object>(sQuery, new { Id = id }));
+            }
+        }
+        [HttpGet]
+        [Route("ListarTiposDeCarga")]
+        public async Task<ActionResult> TipoCargar()
+        {
+            return Ok(await _context.TipoCargas.ToListAsync());
+        }
+        [HttpGet]
+        [Route("AceptarServicio/{id}")]
+        public async Task<ActionResult> AceptarServicio(int id)
+        {
+            var servcio = await _context.Servicios.FindAsync(id);
+            if (servcio is null)
+            {
+                return BadRequest();
+            }
+            else
+            {
+                using (IDbConnection dbConnection = Connection)
+                {
+                    string QueryUpdateSinAceptar = @"Update Servicios set IdEstadoServicio = 3 where IdServicio != @Id";
+                    string QueryUpdateAceptar = @"Update Servicios set IdEstadoServicio = 2 where IdServicio = @Id";
+                    dbConnection.Open();
+                    var OkSinAceptar = await dbConnection.ExecuteAsync(QueryUpdateSinAceptar, new { Id = id });
+                    var OkAceptar = await dbConnection.ExecuteAsync(QueryUpdateAceptar, new { Id = id });
+                    return Ok();
+                }
+            }
+        }
+        [HttpGet]
+        [Route("CancelarServicio/{id}")]
+        public async Task<ActionResult> CancelarServicio(int id)
+        {
+            var servcio = await _context.Servicios.FindAsync(id);
+            if (servcio is null)
+            {
+                return BadRequest();
+            }
+            else
+            {
+                if(servcio.FechaFin >= DateTime.Now)
+                {
+                    return BadRequest();
+                }
+                else
+                {
+                    int estado = 3;
+                    servcio.IdEstadoServicio = estado;
+                    _context.Servicios.Update(servcio);
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
             }
         }
     }

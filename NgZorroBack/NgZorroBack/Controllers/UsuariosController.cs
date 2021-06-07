@@ -40,7 +40,7 @@ namespace NgZorroBack.Controllers
             _signInManager = signInManager;
             _configuracionGlobal = configuracionGlobal.Value;
             _context = context;
-            ConectionString = "Server=DESKTOP-DER5DC8\\SQLEXPRESS;Database=NgZorroMerakiF2;Trusted_Connection=True;";
+            ConectionString = "Server=DESKTOP-DER5DC8\\SQLEXPRESS;Database=NgZorroMerakiF3;Trusted_Connection=True;";
         }
         private IDbConnection Connection
         {
@@ -174,7 +174,8 @@ namespace NgZorroBack.Controllers
                                     inner join EstadoUsuarios E On U.IdEstado = E.IdEstadoUsuario
                                     where R.IdRol >= 1 and R.IdRol <=4";
                 dbConnection.Open();
-                return Ok(await dbConnection.QueryAsync<object>(sQuery));
+                var OkResult = await dbConnection.QueryAsync<object>(sQuery);
+                return Ok(OkResult);
             }
         }
         [HttpGet]
@@ -203,40 +204,14 @@ namespace NgZorroBack.Controllers
         [Route("DetalleUsuario/{id}")]
         public async Task<ActionResult> DetalleUsuario(string id)
         {
-            var usuario = await _context.UsuariosIdentity.FindAsync(id);
-            using (IDbConnection dbConnection = Connection)
-            {
-                string sQuery= @"select u.Id, u.Apellido, U.Nombre, U.Celular, U.UserName, U.NumeroDocumento, U.Email, U.Direccion,
-                                    R.NombreRol, T.NombreDoocumento, G.NombreGenero, E.IdEstadoUsuario, E.EstadoNombre
-                                    from UsuariosIdentity u
-                                    inner join Roles R On U.IdRol = R.IdRol
-                                    inner join TipoDocumentos T On U.IdTipoDocumento = T.IdTipoDocumento
-                                    inner join Generos G On U.IdGenero = G.IdGenero
-                                    inner join EstadoUsuarios E On U.IdEstado = E.IdEstadoUsuario
-                                    where U.Id = @id";
-                dbConnection.Open();
-                return Ok(await dbConnection.QueryAsync<object>(sQuery, new { Id = id }));
-            }
+                return Ok( await validation.DetalleUsuario(id));
+
         }
         [HttpGet]
         [Route("DetalleUsuarioConductor/{id}")]
         public async Task<ActionResult> DetalleUsuarioConductor(string id)
         {
-            using (IDbConnection dbConnection = Connection)
-            {
-                    string sQuery = @"select u.Id, u.Apellido, U.Nombre, U.Celular, U.UserName, U.NumeroDocumento, U.Email, U.Direccion,
-                                    R.NombreRol, T.NombreDoocumento, G.NombreGenero, E.IdEstadoUsuario, E.EstadoNombre,
-									I.FotoConductor, I.FechaInicio, I.FechaFin
-                                    from UsuariosIdentity u
-                                    inner join Roles R On U.IdRol = R.IdRol
-                                    inner join TipoDocumentos T On U.IdTipoDocumento = T.IdTipoDocumento
-                                    inner join Generos G On U.IdGenero = G.IdGenero
-                                    inner join EstadoUsuarios E On U.IdEstado = E.IdEstadoUsuario
-									inner join InfoConductores I On U.Id = I.IdConductor
-                                    where U.Id = @id";
-                    dbConnection.Open();
-                    return Ok(await dbConnection.QueryAsync<object>(sQuery, new { Id = id }));
-            }
+             return Ok(await validation.DetalleUsuarioConductor(id));
         }
         [HttpPost]
         [Route("AgregarConductor")]
@@ -343,15 +318,19 @@ namespace NgZorroBack.Controllers
         [Route("EditarDetalle/{id}")]
         public async Task<Object> DetalleEditarCliPro(string id)
         {
-            var usuario = await _userManager.FindByIdAsync(id).ConfigureAwait(false);
-
-            if (usuario != null)
+            using (IDbConnection dbConnection = Connection)
             {
-                return usuario;
-            }
-            else
-            {
-                return BadRequest(new { mensaje = "No se encuentra el usuario" });
+                var sQuery = @"select * from UsuariosIdentity u where u.Id = @id";
+                dbConnection.Open();
+                var usuario =  await dbConnection.QueryAsync<UsuarioEditar>(sQuery, new { Id = id });
+                if (usuario != null)
+                {
+                    return usuario;
+                }
+                else
+                {
+                    return BadRequest(new { mensaje = "No se encuentra el usuario" });
+                }
             }
         }
         [HttpGet]

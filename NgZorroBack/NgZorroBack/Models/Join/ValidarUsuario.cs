@@ -29,5 +29,40 @@ namespace NgZorroBack.Models.Join
                 return await dbConnection.QueryFirstAsync<int>(sQuery, new { Id = id });
             }
         }
+        public async Task<object> DetalleUsuario(string id)
+        {
+            using (IDbConnection dbConnection = Connection)
+            {
+                string sQuery = @"select u.Id, u.Apellido, U.Nombre, U.Celular, U.UserName, U.NumeroDocumento, U.Email, U.Direccion,
+                                    R.NombreRol, T.NombreDoocumento, G.NombreGenero, E.IdEstadoUsuario, E.EstadoNombre
+                                    from UsuariosIdentity u
+                                    inner join Roles R On U.IdRol = R.IdRol
+                                    inner join TipoDocumentos T On U.IdTipoDocumento = T.IdTipoDocumento
+                                    inner join Generos G On U.IdGenero = G.IdGenero
+                                    inner join EstadoUsuarios E On U.IdEstado = E.IdEstadoUsuario
+                                    where U.Id = @Id";
+                var okQuery = await dbConnection.QueryAsync<object>(sQuery, new { Id = id });
+                return okQuery;
+            }
+        }
+        public async Task<Object> DetalleUsuarioConductor(string id)
+        {
+            using (IDbConnection dbConnection = Connection)
+            {
+                string sQuery = @"select u.Id, u.Apellido, U.Nombre, U.Celular, U.UserName, U.NumeroDocumento, U.Email, U.Direccion,
+                                    R.NombreRol, T.NombreDoocumento, G.NombreGenero, E.IdEstadoUsuario, E.EstadoNombre,
+									I.FotoConductor, I.FechaInicio, I.FechaFin
+                                    from UsuariosIdentity u
+                                    inner join Roles R On U.IdRol = R.IdRol
+                                    inner join TipoDocumentos T On U.IdTipoDocumento = T.IdTipoDocumento
+                                    inner join Generos G On U.IdGenero = G.IdGenero
+                                    inner join EstadoUsuarios E On U.IdEstado = E.IdEstadoUsuario
+									inner join InfoConductores I On U.Id = I.IdConductor
+                                    where U.Id = @Id";
+                dbConnection.Open();
+                var okQuery = await dbConnection.QueryAsync<object>(sQuery, new { Id = id });
+                return okQuery;
+            }
+        }
     }
 }

@@ -16,7 +16,7 @@ namespace NgZorroBack.Models
         public int CelularRecibe { get; set; }
         public int? IdConductor { get; set; }
         public decimal PrecioServicio { get; set; }
-        public DateTime? FechaFin { get; set; }
+        public string FechaFin { get; set; }
         public int IdEstadoServicio { get; set; }
     }
 }
