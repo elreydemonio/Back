@@ -187,18 +187,31 @@ namespace NgZorroBack.Controllers
         {
             using (IDbConnection dbConnection = Connection)
             {
-                string sQuery = @"select  s.IdServicio , s.CelularRecibe,s.DireccionCarga,s.DireccionEntrega,s.FechaFin,s.IdConductor,s.IdEstadoServicio,s.PersonaRecibe,s.PrecioServicio,
-                                    T.DescripcionCarga, s.FechaInicio, E.Estado, E.IdEstadoServicio, s.CelularRecibe, c.Nombre, C.Celular
+                string sQuery = @"select  s.IdServicio , s.IdConductor, V.CodigoV, V.FotoV, C.Nombre+' '+C.Apellido As 'NombreConductor', V.Placa, Tv.Descripcion
                                     from Servicios s 
-			                        join UsuariosIdentity C on s.IdCliente = C.Id
+									join InfoConductores I On s.IdConductor = I.IdInfo
+			                        join UsuariosIdentity C on I.IdConductor = C.Id
 			                        join TipoCargas T On s.IdTipoCarga = T.IdTipoCarga
 			                        join EstadoServicios E On s.IdEstadoServicio = E.IdEstadoServicio
-			                        join InfoConductores I On s.IdConductor = I.IdInfo		
 			                        join Vehiculos V On I.CodigoV = V.CodigoV
 			                        join EstadoVehiculos O On V.IdEstadoVehiculo = O.IdEstadoVehiculo
-			                        where O.IdEstadoVehiculo = 1 and s.IdServicio = @i";
+									join TipoVehiculos Tv On v.IdTipoVehiculo = Tv.IdTipoVehiculo 
+			                        where O.IdEstadoVehiculo = 1";
                 dbConnection.Open();
                 return Ok(await dbConnection.QueryAsync<object>(sQuery, new { Id = id }));
+            }
+        }
+        [HttpGet]
+        [Route("Conductor/{id}")]
+        public async Task<ActionResult> Conductor(int id)
+        {
+            using(IDbConnection dbConnection = Connection)
+            {
+                string sQuery = @"select I.FotoConductor,I.FechaInicio, U.Nombre+' '+U.Apellido,U.Celular As 'NombreConductor' from InfoConductores I 
+									join UsuariosIdentity U On I.IdConductor = U.Id
+									where I.IdInfo = @id";
+                dbConnection.Open();
+                return Ok(await dbConnection.QueryFirstAsync<object>(sQuery, new { Id = id }));
             }
         }
         [HttpGet]
@@ -219,12 +232,17 @@ namespace NgZorroBack.Controllers
             else
             {
                 using (IDbConnection dbConnection = Connection)
-                {
+                { 
                     string QueryUpdateSinAceptar = @"Update Servicios set IdEstadoServicio = 3 where IdServicio != @Id";
                     string QueryUpdateAceptar = @"Update Servicios set IdEstadoServicio = 2 where IdServicio = @Id";
+                    string QueryVehiculo = @"select * from Vehiculos v where v.CodigoV = @Id";
                     dbConnection.Open();
                     var OkSinAceptar = await dbConnection.ExecuteAsync(QueryUpdateSinAceptar, new { Id = id });
                     var OkAceptar = await dbConnection.ExecuteAsync(QueryUpdateAceptar, new { Id = id });
+                    var OkVehiculo = await dbConnection.QueryFirstAsync<Vehiculo>(QueryVehiculo, new { Id = id });
+                    OkVehiculo.IdEstadoVehiculo = 4;
+                    _context.Vehiculos.Update(OkVehiculo);
+                    await _context.SaveChangesAsync();
                     return Ok();
                 }
             }
@@ -246,6 +264,14 @@ namespace NgZorroBack.Controllers
                 }
                 else
                 {
+                using (IDbConnection dbConnection = Connection)
+                {
+                        string QueryVehiculo = @"select * from Vehiculos v where v.CodigoV = @Id";
+                        var OkVehiculo = await dbConnection.QueryFirstAsync<Vehiculo>(QueryVehiculo, new { Id = id });
+                        OkVehiculo.IdEstadoVehiculo = 1;
+                        _context.Vehiculos.Update(OkVehiculo);
+                        await _context.SaveChangesAsync();
+                    }
                     int estado = 3;
                     servcio.IdEstadoServicio = estado;
                     _context.Servicios.Update(servcio);
