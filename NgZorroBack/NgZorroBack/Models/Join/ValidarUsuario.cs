@@ -10,7 +10,7 @@ namespace NgZorroBack.Models.Join
 {
     public class ValidarUsuario
     {
-        string ConectionString = "Server=DESKTOP-DER5DC8\\SQLEXPRESS;Database=NgZorroMerakiF3;Trusted_Connection=True;";
+        string ConectionString = "Server=DESKTOP-EMH23CH;Database=NgZorroMerakiF4;Trusted_Connection=True;";
         private IDbConnection Connection
         {
             get

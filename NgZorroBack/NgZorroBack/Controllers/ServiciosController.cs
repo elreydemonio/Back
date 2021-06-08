@@ -37,7 +37,7 @@ namespace NgZorroBack.Controllers
             _signInManager = signInManager;
             _configuracionGlobal = configuracionGlobal.Value;
             _context = context;
-            ConectionString = "Server=DESKTOP-DER5DC8\\SQLEXPRESS;Database=NgZorroMerakiF3;Trusted_Connection=True;";
+            ConectionString = "Server=DESKTOP-EMH23CH;Database=NgZorroMerakiF4;Trusted_Connection=True;";
         }
         private IDbConnection Connection
         {
@@ -169,16 +169,32 @@ namespace NgZorroBack.Controllers
         public async Task<ActionResult> Update(int id, int idConductor)
         {
             Servicio servicio = await _context.Servicios.FindAsync(id);
+            InfoConductore infoConductore = await _context.InfoConductores.FindAsync(idConductor);
             if (servicio is null)
             {
                 return NoContent();
             }
             else
             {
-                servicio.IdConductor = idConductor;
-                _context.Servicios.Update(servicio);
-                await _context.SaveChangesAsync();
-                return Ok();
+                if(infoConductore is null)
+                {
+                    return BadRequest();
+                }
+                else
+                {
+                    Vehiculo vehiculo = await _context.Vehiculos.FindAsync(infoConductore.CodigoV);
+                    if (vehiculo is null)
+                    {
+                        return BadRequest();
+                    }
+                    else
+                    {
+                        servicio.IdConductor = idConductor;
+                        _context.Servicios.Update(servicio);
+                        await _context.SaveChangesAsync();
+                        return Ok();
+                    }
+                }
             }
         }
         [HttpGet]
@@ -207,11 +223,11 @@ namespace NgZorroBack.Controllers
         {
             using(IDbConnection dbConnection = Connection)
             {
-                string sQuery = @"select I.FotoConductor,I.FechaInicio, U.Nombre+' '+U.Apellido,U.Celular As 'NombreConductor' from InfoConductores I 
+                string sQuery = @"select I.FotoConductor,I.FechaInicio, U.Nombre+' '+U.Apellido As 'NombreConductor',U.Celular, I.IdConductor from InfoConductores I 
 									join UsuariosIdentity U On I.IdConductor = U.Id
 									where I.IdInfo = @id";
                 dbConnection.Open();
-                return Ok(await dbConnection.QueryFirstAsync<object>(sQuery, new { Id = id }));
+                return Ok(await dbConnection.QueryAsync<object>(sQuery, new { Id = id }));
             }
         }
         [HttpGet]
@@ -240,7 +256,7 @@ namespace NgZorroBack.Controllers
                     var OkSinAceptar = await dbConnection.ExecuteAsync(QueryUpdateSinAceptar, new { Id = id });
                     var OkAceptar = await dbConnection.ExecuteAsync(QueryUpdateAceptar, new { Id = id });
                     var OkVehiculo = await dbConnection.QueryFirstAsync<Vehiculo>(QueryVehiculo, new { Id = id });
-                    OkVehiculo.IdEstadoVehiculo = 4;
+                    OkVehiculo.IdEstadoVehiculo = 3;
                     _context.Vehiculos.Update(OkVehiculo);
                     await _context.SaveChangesAsync();
                     return Ok();
@@ -278,6 +294,25 @@ namespace NgZorroBack.Controllers
                     await _context.SaveChangesAsync();
                     return Ok();
                 }
+            }  
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("ServiciosPorAceptar")]
+        public async Task<ActionResult> ServiciosConductor()
+        {
+            var id = User.Claims.First(c => c.Type == "UsuarioID").Value;
+            using (IDbConnection dbConnection = Connection)
+            {
+                string sQuery = @"select c.Nombre + ' ' +c.Apellido,s.DireccionCarga,s.DireccionEntrega, T.DescripcionCarga,s.PrecioServicio from Servicios S
+									join UsuariosIdentity C On S.IdCliente = C.Id
+									join TipoCargas T On S.IdTipoCarga = T.IdTipoCarga
+									join InfoConductores I On S.IdConductor = I.IdInfo
+									join UsuariosIdentity Co On I.IdConductor = Co.Id
+									where Co.Id = @Id";
+                dbConnection.Open();
+                return Ok(await dbConnection.QueryAsync<object>(sQuery, new { Id = id }));
             }
         }
     }

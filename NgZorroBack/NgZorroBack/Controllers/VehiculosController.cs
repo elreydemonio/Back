@@ -30,7 +30,7 @@ namespace NgZorroBack.Controllers
         {
             _userManager = userManager;
             _context = context;
-            ConectionString = "Server=DESKTOP-DER5DC8\\SQLEXPRESS;Database=NgZorroMerakiF3;Trusted_Connection=True;";
+            ConectionString = "Server=DESKTOP-EMH23CH;Database=NgZorroMerakiF4;Trusted_Connection=True;";
         }
         private IDbConnection Connection
         {

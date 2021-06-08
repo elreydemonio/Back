@@ -40,7 +40,7 @@ namespace NgZorroBack.Controllers
             _signInManager = signInManager;
             _configuracionGlobal = configuracionGlobal.Value;
             _context = context;
-            ConectionString = "Server=DESKTOP-DER5DC8\\SQLEXPRESS;Database=NgZorroMerakiF3;Trusted_Connection=True;";
+            ConectionString = "Server=DESKTOP-EMH23CH;Database=NgZorroMerakiF4;Trusted_Connection=True;";
         }
         private IDbConnection Connection
         {
@@ -125,7 +125,7 @@ namespace NgZorroBack.Controllers
         [Route("ListarRoles")]
         public async Task<IEnumerable<Role>> GetRoles()
         {
-            return await _context.Roles.ToListAsync();
+            return await _context.Roles.Where(x=> x.IdRol > 1 && x.IdRol < 4).ToListAsync();
         }
         [HttpGet]
         [Route("Perfil")]
